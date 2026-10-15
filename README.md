@@ -141,6 +141,12 @@ mvn -q -DskipTests=false test
 
 ---
 
+## Übung 1
+- Autor: Stefan Kerschbaummayer
+- Besonderheit: Git wir von mir für die Semesterprojekte sehr viel genutzt. Mit den normalen sachen komme ich gut klar nur wenn es ins detail geht muss man halt mal nachschauen wie das geht.
+
+---
+
 ## Bewertung (Rubrik, 24 Punkte)
 
 | Teilaufgabe | Beschreibung | Punkte |
