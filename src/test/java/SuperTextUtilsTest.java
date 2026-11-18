@@ -2,11 +2,7 @@ import com.example.cicd.TextUtils;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Hinweis:
- * - Dieser Test wird voraussichtlich FAILEN, weil isPalindrome '==' nutzt.
- * - In Uebung 2 sollte dieser Bug gefixt werden.
- */
+/** Additional tests from exercise 1, updated for the corrected palindrome behavior. */
 class SuperTextUtilsTest {
 
     @Test
@@ -21,6 +17,6 @@ class SuperTextUtilsTest {
 
     @Test
     void isPalindrome_caseInsensitive_expectedTrue() {
-        assertFalse(TextUtils.isPalindrome("Anna"));
+        assertTrue(TextUtils.isPalindrome("Anna"));
     }
 }

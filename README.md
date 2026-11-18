@@ -1,5 +1,7 @@
 # CI/CD Übung – Java Basisprojekt (Ü1 mit Anleitungen)
 
+[![CI](https://github.com/sfnksbr/ci-cd-uebung-kerschbaummayer/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sfnksbr/ci-cd-uebung-kerschbaummayer/actions/workflows/ci.yml)
+
 Dieses Repository ist der Startpunkt für **Übung 1** und wird in **allen folgenden Übungen** weiterverwendet
 (CI mit GitHub Actions → SonarCloud → Docker → Security-Scan).
 
@@ -23,16 +25,60 @@ mvn -q -DskipTests=false test
 ```
 Coverage-Report (für Übung 2 / SonarCloud): `target/site/jacoco/index.html`
 
-> **Hinweis:** `TextUtilsTest` enthält einen bewusst fehlschlagenden Test (`isPalindrome_caseInsensitive_expectedTrue`), der erst in Übung 2 behoben wird. Bis dahin endet `mvn test` mit **1 Failure** und `BUILD FAILURE`, und der Coverage-Report wird nicht erzeugt. Den Report gibt es trotzdem mit:
-> ```bash
-> mvn test -Dmaven.test.failure.ignore=true
-> ```
+Der Palindrom-Bug aus Übung 1 ist in Übung 2 behoben. Alle Tests müssen erfolgreich
+laufen; Testfehler werden nicht ignoriert. `mvn clean verify` baut das Projekt und
+erzeugt zusätzlich den JaCoCo-Report als HTML und XML unter `target/site/jacoco/`.
 
 ---
 
 ## Projektstruktur
 - `src/main/java`: `App`, `Calculator`, `TextUtils`, `NumberUtils`
-- `src/test/java`: `CalculatorTest`, `TextUtilsTest` (enthält TODOs & einen bewusst fehlschlagenden Test)
+- `src/test/java`: Unit- und Regressionstests für `Calculator` und `TextUtils`
+
+## Übung 2 – GitHub Actions und SonarCloud
+
+Die Pipeline in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) führt Maven-Build,
+JUnit-Tests und JaCoCo-Coverage mit Temurin auf drei Varianten aus:
+
+| Betriebssystem | Java 17 | Java 21 |
+|---|---|---|
+| `ubuntu-latest` | aktiv | aktiv |
+| `windows-latest` | aktiv | ausgeschlossen |
+
+Windows mit Java 21 ist ausgeschlossen, um die Laufzeit zu reduzieren. Beide
+Betriebssysteme werden mit der Projekt-Basisversion Java 17 getestet; Ubuntu
+prüft zusätzlich die Kompatibilität mit Java 21.
+
+Bei jedem Push auf `main` läuft die vollständige Pipeline einschließlich
+SonarCloud. Bei Pull Requests nach `main` laufen die Matrix-Tests für Änderungen an
+`src/`, `pom.xml` oder Workflows. Reine Dokumentationsänderungen in PRs lösen keinen
+Lauf aus. Concurrency bricht überholte PR-Läufe ab; Push-Läufe auf `main` werden
+nicht aktiv abgebrochen, damit die SonarCloud-Analyse ausgeführt werden kann.
+
+Im jeweiligen [Actions-Lauf](https://github.com/sfnksbr/ci-cd-uebung-kerschbaummayer/actions/workflows/ci.yml)
+liegen die Artefakte `surefire-<os>-java-<version>` (auch bei Testfehlern) und
+`jacoco-<os>-java-<version>` (HTML/XML-Coverage) für jede Matrix-Variante.
+Die Aufbewahrungsdauer beträgt 30 Tage.
+
+SonarCloud analysiert nach erfolgreichen Matrix-Tests mit dem Maven-Scanner auf
+Ubuntu/Java 21 und liest `target/site/jacoco/jacoco.xml`. Der Job wartet auf das
+Quality Gate und schlägt bei einem roten Gate fehl.
+
+Für die Einrichtung unter **Settings → Secrets and variables → Actions**:
+
+- Repository-Secret `SONAR_TOKEN`: persönlicher SonarCloud-Token mit Analyserechten.
+- Repository-Variable `SONAR_ORGANIZATION`: Organization Key des SonarCloud-Projekts.
+- Repository-Variable `SONAR_PROJECT_KEY`: Project Key des SonarCloud-Projekts.
+- Optional `SONAR_HOST_URL`: Standard ist `https://sonarcloud.io` (EU).
+
+Im SonarCloud-Projekt muss **Administration → Analysis Method → Automatic Analysis**
+ausgeschaltet sein. Zugangsdaten gehören ausschließlich in GitHub-Secrets.
+
+Behoben wurden der String-Referenzvergleich bei Palindromen und der zu breite,
+leere `catch`-Block in `safeParseInt`. Regressionstests prüfen gemischte
+Groß-/Kleinschreibung, Nicht-Palindrome, `null`, leere Eingaben und Integer-Grenzen.
+Der zusätzliche Test aus Übung 1 erwartet nun ebenfalls das korrekte Ergebnis für
+`Anna`. Der Abgabebericht mit Nachweisen wird separat als PDF erstellt.
 
 ---
 

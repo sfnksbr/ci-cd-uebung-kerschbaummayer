@@ -5,3 +5,6 @@ target/
 .idea/
 .vscode/
 .DS_Store
+
+# Local reference documents
+/docs_ref/
