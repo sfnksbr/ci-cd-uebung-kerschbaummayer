@@ -74,8 +74,12 @@ Für die Einrichtung unter **Settings → Secrets and variables → Actions**:
 Im SonarCloud-Projekt muss **Administration → Analysis Method → Automatic Analysis**
 ausgeschaltet sein. Zugangsdaten gehören ausschließlich in GitHub-Secrets.
 
-Behoben wurden der String-Referenzvergleich bei Palindromen und der zu breite,
-leere `catch`-Block in `safeParseInt`. Regressionstests prüfen gemischte
+Nachweislich behobene SonarCloud-Funde sind der String-Referenzvergleich bei
+Palindromen (`java:S4973`) und der veränderbare, nie neu zugewiesene Zustand in
+`NumberUtils` (`java:S9438`). Das ungenutzte Feld `unusedCounter` wurde entfernt.
+Das Projekt verwendet das Java-Regelprofil **Sonar way extended**.
+Zusätzlich wurde der zu breite, leere `catch`-Block in `safeParseInt` präzisiert.
+Regressionstests prüfen gemischte
 Groß-/Kleinschreibung, Nicht-Palindrome, `null`, leere Eingaben und Integer-Grenzen.
 Der zusätzliche Test aus Übung 1 erwartet nun ebenfalls das korrekte Ergebnis für
 `Anna`. Der Abgabebericht mit Nachweisen wird separat als PDF erstellt.
